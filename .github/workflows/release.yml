@@ -1,0 +1,18 @@
+name: release
+
+# Run this workflow only when a `protected` workflow is completed.
+# Job `check` in `protected` workflow is verifying that tag is coming from the master branch.
+# That means that someone did a review and approved the change to master through PR.
+on:
+  workflow_run:
+    workflows:
+      - protected
+    types:
+      - completed
+
+jobs:
+  test-job:
+    name: Test Step
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "DO YOUR RELEASE STUFF HERE"

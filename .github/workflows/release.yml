@@ -29,12 +29,12 @@ jobs:
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: echo $GITHUB_CONTEXT | jq '.event.base_ref'
+        run: echo "$GITHUB_CONTEXT"
 
-      - name: Print base_ref
+      - name: Dump base_ref
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: jq .event.base_ref < $(echo "$GITHUB_CONTEXT")
+        run: echo $GITHUB_CONTEXT | jq .event.base_ref
       - name: Dump job context
         env:
           JOB_CONTEXT: ${{ toJSON(job) }}

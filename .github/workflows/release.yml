@@ -3,7 +3,10 @@ name: release
 # Run this workflow only when a `protected` workflow is completed.
 # Job `check` in `protected` workflow is verifying that tag is coming from the master branch.
 # That means that someone did a review and approved the change to master through PR.
-on:
+on:  
+  push:
+    tags:        
+      - "*"
   workflow_run:
     workflows:
       - protected
@@ -15,4 +18,34 @@ jobs:
     name: Test Step
     runs-on: ubuntu-latest
     steps:
+
+      # Tmate session - tshoot actions
+      # - name: Setup tmate session
+      #   if: always()
+      #   uses: mxschmitt/action-tmate@v3
+      #   env:
+      #     GITHUB_CONTEXT: ${{ toJSON(github) }}
+
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: echo $GITHUB_CONTEXT | jq '.event.base_ref'
+
+      - name: Print base_ref
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: jq .event.base_ref < $(echo "$GITHUB_CONTEXT")
+      - name: Dump job context
+        env:
+          JOB_CONTEXT: ${{ toJSON(job) }}
+        run: echo "$JOB_CONTEXT"
+      - name: Dump steps context
+        env:
+          STEPS_CONTEXT: ${{ toJSON(steps) }}
+        run: echo "$STEPS_CONTEXT"
+      - name: Dump runner context
+        env:
+          RUNNER_CONTEXT: ${{ toJSON(runner) }}
+        run: echo "$RUNNER_CONTEXT"
+
       - run: echo "DO YOUR RELEASE STUFF HERE"

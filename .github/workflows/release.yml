@@ -7,45 +7,37 @@ on:
   push:
     tags:        
       - "*"
-  workflow_run:
-    workflows:
-      - protected
-    types:
-      - completed
 
 jobs:
-  test-job:
-    name: Test Step
+
+  validation:
+    name: Dump outputs
     runs-on: ubuntu-latest
+    outputs:
+      source_branch: ${{ steps.source_branch.outputs.source_branch }}
     steps:
 
-      # Tmate session - tshoot actions
-      # - name: Setup tmate session
-      #   if: always()
-      #   uses: mxschmitt/action-tmate@v3
-      #   env:
-      #     GITHUB_CONTEXT: ${{ toJSON(github) }}
-
-      - name: Dump GitHub context
+      - id: source_branch
+        name: Dump source_branch
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: echo $GITHUB_CONTEXT | jq '.event.base_ref'
+        run: |
+          sourceBranch=$(echo $GITHUB_CONTEXT | jq .event.base_ref)
+          echo $sourceBranch
+          echo "::set-output name=source_branch::$sourceBranch"
 
-      - name: Print base_ref
-        env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: jq .event.base_ref < $(echo "$GITHUB_CONTEXT")
-      - name: Dump job context
-        env:
-          JOB_CONTEXT: ${{ toJSON(job) }}
-        run: echo "$JOB_CONTEXT"
-      - name: Dump steps context
-        env:
-          STEPS_CONTEXT: ${{ toJSON(steps) }}
-        run: echo "$STEPS_CONTEXT"
-      - name: Dump runner context
-        env:
-          RUNNER_CONTEXT: ${{ toJSON(runner) }}
-        run: echo "$RUNNER_CONTEXT"
+      - name: Check if tag is created from master
+        run: |
+          if [[ ${{steps.source_branch.outputs.source_branch}} == "feature/protected-test1" ]]; then
+              echo "Tag is created from master branch"
+          else
+              echo "Tag is not created from master branch"
+              exit 1
+          fi
 
-      - run: echo "DO YOUR RELEASE STUFF HERE"
+  release:
+    name: Release
+    needs: validation
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Release stuff"

@@ -1,6 +1,7 @@
 name: master
 
-runs-on: ubuntu-latest
+default:
+  runs-on: ubuntu-latest
 
 on:
   workflow_run:

@@ -2,7 +2,8 @@ name: ci
 
 on: push
 
-runs-on: ubuntu-latest
+default:
+  runs-on: ubuntu-latest
 
 jobs:
   build:

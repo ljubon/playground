@@ -23,7 +23,7 @@ jobs:
     name: Release
     needs: [dump]
     runs-on: ubuntu-latest
-    if: ${{ github.ref_type == 'tag' && github.event.base_ref == 'ref/heads/master' }}
+    if: ${{ github.ref_protected && github.workflow_run.head_branch == 'master' }}
     environment: production
     steps:
       - run: curl $CMD

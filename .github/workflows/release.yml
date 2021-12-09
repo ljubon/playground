@@ -1,46 +1,22 @@
-name: release
+name: master
 
-# Run this workflow only when a `protected` workflow is completed.
-# Job `check` in `protected` workflow is verifying that tag is coming from the master branch.
-# That means that someone did a review and approved the change to master through PR.
-on:  
-  push:
-    tags:        
-      - "*"
-# TODO - re-think logic what check we want to have and how we can protected that workflow ?!
-# https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows#workflow_run
+default:
+  runs-on: ubuntu-latest
 
+on:
+  workflow_run:
+    workflows: ["ci"]
+    branches: [master]
+    tags: ['*']
+    types:
+      - completed
 
 jobs:
-
-  validation:
-    name: Dump outputs
-    runs-on: ubuntu-latest
-    outputs:
-      source_branch: ${{ steps.source_branch.outputs.source_branch }}
-    steps:
-
-      - id: source_branch
-        name: Dump source_branch
-        env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: |
-          sourceBranch=$(echo $GITHUB_CONTEXT | jq .event.base_ref)
-          echo $sourceBranch
-          echo "::set-output name=source_branch::$sourceBranch"
-
-      - name: Check if tag is created from master
-        run: |
-          if [[ ${{steps.source_branch.outputs.source_branch}} == "refs/heads/master" ]]; then
-              echo "Tag is created from master branch"
-          else
-              echo "Tag is not created from master branch"
-              exit 1
-          fi
-
   release:
     name: Release
-    needs: validation
-    runs-on: ubuntu-latest
+    if: ${{ github.ref_type == 'tag' && github.event.base_ref == 'ref/heads/master' }}
+    environment: production
     steps:
-      - run: echo "Release stuff"
+      - run: curl $command
+    with:
+      command: ${{ secrets.TEST_SECRET }}

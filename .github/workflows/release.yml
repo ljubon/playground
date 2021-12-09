@@ -27,7 +27,7 @@ jobs:
     name: Release
     needs: [check]
     runs-on: ubuntu-latest
-    if: ${{ github.workflow_run.head_branch != github.ref_name && github.ref_protected }}
+    if: ${{ github.workflow_run.head_branch != github.ref_name }}
     environment: production
     steps:
       - run: curl $CMD

@@ -1,14 +1,10 @@
 name: master
 
 on:
-  push:
-    tags:  ["*"]
-    # branches: ["master"]
   workflow_run:
     workflows: ["ci"]
     types:
       - completed
-
 
 jobs:
 
@@ -31,13 +27,23 @@ jobs:
   #         echo $tagRef
   #         echo "::set-output name=check::$tagRef"
   #       working-directory: $GITHUB_WORKSPACE
+
+  debug:
+    name: Debug
+    runs-on: ubuntu-latest
+    steps:
+      - id: debug
+        name: Debug
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: echo $GITHUB_CONTEXT
           
 
   release:
     name: Release
-    # needs: [check]
     runs-on: ubuntu-latest
-    # if: ${{ github.workflow_run.head_branch == needs.check.outputs.check }}
+    needs: [debug]
+    if: ${{ github.ref_type == 'tag' }}
     environment: production
     steps:
       - run: curl $CMD

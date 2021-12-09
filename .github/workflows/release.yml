@@ -4,6 +4,7 @@ on:
   workflow_run:
     workflows: ["ci"]
     branches: ["master"]
+    tags: ["*"]
     types:
       - completed
 

@@ -2,8 +2,9 @@ name: master
 
 on:
   workflow_run:
-    workflows: ['ci']
-    ref_type: 'tag'
+    workflows: ["ci"]
+    github:
+      ref_type: "tag"
     types:
       - completed
 

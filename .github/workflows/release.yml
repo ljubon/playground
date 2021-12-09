@@ -3,8 +3,7 @@ name: master
 on:
   workflow_run:
     workflows: ["ci"]
-    push:
-      tags: '*'
+    branches: ["master"]
     types:
       - completed
 

@@ -16,5 +16,5 @@ jobs:
     environment: production
     steps:
       - run: curl $command
-    with:
-      command: ${{ secrets.TEST_SECRET }}
+        with:
+          command: ${{ secrets.TEST_SECRET }}

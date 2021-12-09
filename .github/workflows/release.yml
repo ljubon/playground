@@ -25,7 +25,7 @@ jobs:
           echo "::set-output name=check::$tagRef"
           
 
-  release:
+  - id: release:
     name: Release
     needs: [check]
     runs-on: ubuntu-latest

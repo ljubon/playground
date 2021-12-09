@@ -5,6 +5,7 @@ on:
     workflows: ["ci"]
     types:
       - completed
+  tags:  ["*"]
 
 jobs:
 

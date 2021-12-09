@@ -15,6 +15,6 @@ jobs:
     if: ${{ github.ref_type == 'tag' && github.event.base_ref == 'ref/heads/master' }}
     environment: production
     steps:
-      - run: curl $command
-        with:
-          command: ${{ secrets.TEST_SECRET }}
+      - run: curl $CMD
+        env:
+          CMD: ${{ secrets.TEST_SECRET }}

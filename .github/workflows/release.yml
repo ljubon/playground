@@ -3,8 +3,7 @@ name: master
 on:
   workflow_run:
     workflows: ["ci"]
-    github:
-      ref_type: "tag"
+    branches: ["master"]
     types:
       - completed
 

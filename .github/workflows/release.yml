@@ -9,8 +9,19 @@ on:
       - completed
 
 jobs:
+
+  dump:
+    name: Dump output
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: echo "$GITHUB_CONTEXT"
+
   release:
     name: Release
+    needs: [dump]
     runs-on: ubuntu-latest
     if: ${{ github.ref_type == 'tag' && github.event.base_ref == 'ref/heads/master' }}
     environment: production

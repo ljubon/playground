@@ -2,8 +2,9 @@ name: master
 
 on:
   workflow_run:
-    workflows: ["ci"]
+    workflows: ['ci']
     tags: ['*']
+    bracnhes: ['master']
     types:
       - completed
 
@@ -21,7 +22,7 @@ jobs:
     name: Release
     needs: [dump]
     runs-on: ubuntu-latest
-    # if: ${{ github.ref_name == 'master' && github.workflow_run.head_branch != }}
+    if: ${{ github.ref_name = 'master' && github.workflow_run.head_branch != }}
     environment: production
     steps:
       - run: curl $CMD

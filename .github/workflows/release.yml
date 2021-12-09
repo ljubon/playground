@@ -5,6 +5,7 @@ on:
     workflows: ['ci']
     push:
       tags: ['*']
+      branches-ignore: ['*']
     types:
       - completed
 

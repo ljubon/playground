@@ -26,6 +26,7 @@ jobs:
           tagRef=$(git describe --tags --abbrev=0)
           echo $tagRef
           echo "::set-output name=check::$tagRef"
+        working-directory: $GITHUB_WORKSPACE
           
 
   release:

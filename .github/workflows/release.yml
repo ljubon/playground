@@ -3,9 +3,7 @@ name: master
 on:
   workflow_run:
     workflows: ['ci']
-    push:
-      tags: ['*']
-      branches-ignore: ['*']
+    ref_type: 'tag'
     types:
       - completed
 

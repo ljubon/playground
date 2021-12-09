@@ -8,12 +8,15 @@ on:
 
 jobs:
 
-  - id: check
+  check:
     name: Check tag origin
     runs-on: ubuntu-latest
     if: ${{ github.ref_protected }}
+    outputs:
+      check: ${{ steps.check.outputs.check }}
     steps:
-      - name: Check tag origin
+      - id: check
+        name: Check tag origin
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
           WORKFLOW_TAG_SHA: ${{ github.workflow_run.head_commit.id }}
@@ -25,11 +28,11 @@ jobs:
           echo "::set-output name=check::$tagRef"
           
 
-  - id: release
+  release:
     name: Release
     needs: [check]
     runs-on: ubuntu-latest
-    if: ${{ github.workflow_run.head_branch == steps.check.outputs.tagRef }}
+    if: ${{ github.workflow_run.head_branch == needs.check.outputs.check }}
     environment: production
     steps:
       - run: curl $CMD

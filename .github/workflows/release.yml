@@ -21,8 +21,8 @@ jobs:
   release:
     name: Release
     needs: [dump]
-    runs-on: ubuntu-latest
-    if: ${{ github.base_ref == '' && github.ref_name == 'master' && github.workflow_run.head_branch ^[0-9+][.0-9+]* }}
+    runs-on: ubuntu-latest #&& github.workflow_run.head_branch ^[0-9+][.0-9+]*
+    if: ${{ github.base_ref == '' && github.ref_name == 'master' }}
     environment: production
     steps:
       - run: curl $CMD

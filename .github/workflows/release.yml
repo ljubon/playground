@@ -1,8 +1,5 @@
 name: master
 
-default:
-  runs-on: ubuntu-latest
-
 on:
   workflow_run:
     workflows: ["ci"]
@@ -14,6 +11,7 @@ on:
 jobs:
   release:
     name: Release
+    runs-on: ubuntu-latest
     if: ${{ github.ref_type == 'tag' && github.event.base_ref == 'ref/heads/master' }}
     environment: production
     steps:

@@ -46,7 +46,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     needs: [debug]
-    if: ${{ github.event.workflow_run.head_branch == github.ref_name }}
+    if: ${{ github.event.workflow_run.head_branch != github.ref_name }}
     environment: production
     steps:
       - run: curl $CMD

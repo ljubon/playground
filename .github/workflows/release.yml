@@ -8,32 +8,33 @@ on:
 
 jobs:
 
-  check:
-    name: Check tag
-    runs-on: ubuntu-latest
-    outputs:
-      match: ${{ steps.checkTag.outputs.match }}
-    steps:
-      - id: debug
-        name: Debug
-        env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: |
-          echo ${{ github.event.workflow_run.head_branch }}
-          echo ${{ github.event.workflow_run.head_sha }}
-          echo ${{ github.sha }}
-          echo $GITHUB_CONTEXT
-      - name: Check Tag
-        id: checkTag
-        run: |
-          if [[ ${{ github.event.workflow_run.head_branch }} =~ ^[0-9].[0-9]+ ]]; then
-              echo ::set-output name=match::true
-          fi
+  # check:
+  #   name: Check tag
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     match: ${{ steps.checkTag.outputs.match }}
+  #   steps:
+  #     - id: debug
+  #       name: Debug
+  #       env:
+  #         GITHUB_CONTEXT: ${{ toJSON(github) }}
+  #       run: |
+  #         echo ${{ github.event.workflow_run.head_branch }}
+  #         echo ${{ github.event.workflow_run.head_sha }}
+  #         echo ${{ github.sha }}
+  #         echo $GITHUB_CONTEXT
+  #     - name: Check Tag
+  #       id: checkTag
+  #       run: |
+  #         if [[ ${{ github.event.workflow_run.head_branch }} =~ ^[0-9].[0-9]+ ]]; then
+  #             echo ::set-output name=match::true
+  #         fi
   release:
     name: Release
     runs-on: ubuntu-latest
-    needs: [check]
+    # needs: [check]
     if: |
+     [[ ${{ github.event.workflow_run.head_branch }} =~ ^[0-9].[0-9]+ ]] &&
      needs.check.outputs.match == 'true' && 
      github.event.workflow_run.head_sha == github.sha
     environment: production

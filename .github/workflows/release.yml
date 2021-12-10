@@ -3,6 +3,7 @@ name: release
 on:
   workflow_run:
     workflows: ["ci"]
+    branches: ["master"]
     types:
       - completed
 
@@ -40,10 +41,7 @@ jobs:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
         run: |
           echo ${{ github.event.workflow_run.head_branch }}
-          echo ${{ github.event.workflow_run.head_commit.id }}
           echo ${{ github.event.workflow_run.head_sha }}
-          echo ${{ github.ref_name }}
-          echo ${{ github.ref }}
           echo ${{ github.sha }}
           echo $GITHUB_CONTEXT
 
@@ -60,7 +58,7 @@ jobs:
     needs: [debug]
     if: |
      needs.debug.outputs.match == 'true' && 
-     github.event.workflow_run.head_commit.id == github.sha
+     github.event.workflow_run.head_sha == github.sha
     environment: production
     steps:
       - run: curl $CMD

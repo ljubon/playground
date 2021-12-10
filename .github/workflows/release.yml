@@ -38,7 +38,6 @@ jobs:
     if: |
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.head_sha == github.sha &&
-      github.ref_protected == 'true' &&
       needs.check.outputs.match == 'true'
     environment: production
     steps:

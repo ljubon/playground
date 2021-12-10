@@ -60,7 +60,7 @@ jobs:
     needs: [debug]
     if: |
       needs.debug.outputs.match == 'true' &&
-      github.event.workflow_run.head_commit.id == github.sha &&
+      github.event.workflow_run.head_commit.id == github.sha
     environment: production
     steps:
       - run: curl $CMD

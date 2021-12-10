@@ -3,7 +3,6 @@ name: release
 on:
   workflow_run:
     workflows: ["ci"]
-    tags: ["*"]
     types:
       - completed
 
@@ -42,6 +41,7 @@ jobs:
           echo ${{ github.event.workflow_run.head_commit.id }}
           echo ${{ github.event.workflow_run.head_sha }}
           echo ${{ github.ref_name }}
+          echo ${{ github.ref }}
           echo ${{ github.sha }}
           echo $GITHUB_CONTEXT
 

@@ -57,8 +57,8 @@ jobs:
     needs: [debug]
     if: |
       github.event.workflow_run.head_branch != github.ref_name && 
-      github.event.workflow_run.head_commit.id != github.sha  && 
-      github.event.workflow_run.head_sha != github.sha  && 
+      github.event.workflow_run.head_commit.id == github.sha  && 
+      github.event.workflow_run.head_sha == github.sha  && 
       github.ref_name == 'master'
     environment: production
     steps:

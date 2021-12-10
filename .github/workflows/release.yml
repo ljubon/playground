@@ -22,6 +22,7 @@ jobs:
           echo ${{ github.event.workflow_run.head_branch }}
           echo ${{ github.event.workflow_run.head_sha }}
           echo ${{ github.sha }}
+          echo ${{ github.ref_protected }}
           echo $GITHUB_CONTEXT
 
       - name: Check Tag

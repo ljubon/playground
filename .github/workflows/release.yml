@@ -45,11 +45,11 @@ jobs:
           echo ${{ github.sha }}
           echo $GITHUB_CONTEXT
 
-      - name: Setup tmate session
-        if: always()
-        uses: mxschmitt/action-tmate@v3
-        env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
+      # - name: Setup tmate session
+      #   if: always()
+      #   uses: mxschmitt/action-tmate@v3
+      #   env:
+      #     GITHUB_CONTEXT: ${{ toJSON(github) }}
 
   release:
     name: Release

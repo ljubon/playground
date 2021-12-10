@@ -3,6 +3,7 @@ name: release
 on:
   workflow_run:
     workflows: ["ci"]
+    branches-ignore: ["!master"]
     types:
       - completed
 

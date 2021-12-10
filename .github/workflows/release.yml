@@ -7,15 +7,15 @@ on:
       - completed
 
 jobs:
-
-  debug:
-    name: Debug
+  check:
+    name: Check tag
     runs-on: ubuntu-latest
     outputs:
       match: ${{ steps.checkTag.outputs.match }}
     steps:
+
       - id: debug
-        name: Debug
+        name: Check tag
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
         run: |
@@ -34,11 +34,11 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    needs: [debug]
+    needs: [check]
     if: |
-      needs.debug.outputs.match == 'true' && 
+      needs.check.outputs.match == 'true' && 
       github.event.workflow_run.head_sha == github.sha &&
-      github.ref_protected
+      github.ref_protected == 'true'
     environment: production
     steps:
       - run: curl $CMD

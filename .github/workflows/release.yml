@@ -37,8 +37,8 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
         run: |
-          echo ${{ github.workflow_run.head_branch }}
-          echo github.workflow_run.head_branch
+          echo ${{ github.event.workflow_run.head_branch }}
+          echo ${{ github.ref_name }}
           echo $GITHUB_CONTEXT
 
 
@@ -46,7 +46,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     needs: [debug]
-    if: ${{ github.event.workflow_run.head_branch == github.ref_name }}
+    if: ${{ github.event.workflow_run.head_branch != github.ref_name }}
     environment: production
     steps:
       - run: curl $CMD

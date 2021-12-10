@@ -36,14 +36,16 @@ jobs:
         name: Debug
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: echo $GITHUB_CONTEXT
+        run: |
+          echo ${{ github.workflow_run.head_branch }}
+          echo $GITHUB_CONTEXT
           
 
   release:
     name: Release
     runs-on: ubuntu-latest
     needs: [debug]
-    if: ${{ github.ref_type == 'tag' }}
+    if: github.workflow_run.head_branch != github.ref_name
     environment: production
     steps:
       - run: curl $CMD

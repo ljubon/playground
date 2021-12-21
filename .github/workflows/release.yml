@@ -35,13 +35,14 @@ jobs:
         run: |
           echo ::set-output name=match::false
           master_head_sha=$(git ls-remote $REPO master | awk '{print $1}')
-          if [[ $master_head_sha == $WF_RUN_HEAD_SHA ]]; then
+          checkTag=$(git ls-remote $REPO refs/tags/$WF_RUN_HEAD_BRANCH | awk '{print $2}')
+          if [[ $master_head_sha == $WF_RUN_HEAD_SHA && $checkTag =~ ^(refs\/tags\/) ]]; then
               echo ::set-output name=match::true
           fi
         env: 
           WF_RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          WF_RUN_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
           REPO: ${{ github.repositoryUrl }}
-          # git ls-remote GIT_URL HEAD_BRANCH | grep head_sha
 
   release:
     name: Release

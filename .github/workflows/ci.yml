@@ -11,3 +11,11 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
         run: echo "$GITHUB_CONTEXT"
+        # upload artifact test.txt  or whatever
+
+      - run: echo "hello" > artifact.txt
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build-artifact
+          path: artifact.txt
+

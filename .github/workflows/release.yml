@@ -12,8 +12,14 @@ jobs:
     name: Check tag
     runs-on: ubuntu-latest
     outputs:
-      match: ${{ steps.checkTag.outputs.match }}
+      match: ${{ steps.check.outputs.match }}
     steps:
+      - name: Checkout tag
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+          fetch-depth: 0
+
       - id: debug
         name: Debug
         env:
@@ -23,13 +29,20 @@ jobs:
           echo ${{ github.event.workflow_run.head_sha }}
           echo ${{ github.sha }}
           echo $GITHUB_CONTEXT
-      - name: Check Tag
-        id: checkTag
+
+      - name: Check
+        id: check
         run: |
           echo ::set-output name=match::false
-          if [[ ${{ github.event.workflow_run.head_branch }} =~ ^[0-9].[0-9]+ ]]; then
+          master_head_sha=$(git ls-remote $REPO master | awk '{print $1}')
+          if [[ $master_head_sha == $WF_RUN_HEAD_SHA ]]; then
               echo ::set-output name=match::true
           fi
+        env: 
+          WF_RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          REPO: ${{ github.repositoryUrl }}
+          # git ls-remote GIT_URL HEAD_BRANCH | grep head_sha
+
   release:
     name: Release
     runs-on: ubuntu-latest
@@ -40,6 +53,28 @@ jobs:
       needs.check.outputs.match == 'true'
     environment: production
     steps:
-      - run: curl $CMD
+      - name: Download Artifacts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p artifacts && cd artifacts
+          artifacts_url=${{ github.event.workflow_run.artifacts_url }}
+          gh api $artifacts_url -q '.artifacts[] | select(.name=="build-artifact" or .name=="Another file") | [.name, .archive_download_url] | @tsv' | while read artifact
+          do
+            IFS=$'\t' read name url <<< "$artifact"
+            gh api $url > "$name.zip"
+            unzip -d "$name" "$name.zip"
+          done
+          if [ $(ls . | wc -l) -eq 0 ]; then
+            echo "::error::No artifact with name 'unit-test-results' or 'Another file"
+            exit 1
+          fi
+        shell: bash
+
+      # Verify reading protected secrets and artifact
+      - run: |
+          curl $CMD
+          cat $TEST
         env:
           CMD: ${{ secrets.TEST_SECRET }}
+          TEST: artifacts/build-artifact/artifact.txt

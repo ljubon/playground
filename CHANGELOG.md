@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [2.15.0] - 2024-03-06
 
-### Changeq
+### Change
 
 - v1.1 Test4 Portuguese translation.
 - v1.1 Test1 Translation

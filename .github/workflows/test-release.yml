@@ -1,48 +1,132 @@
-name: Publish release
+name: Create Release Notes and Release
 
 on:
-  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
 
 jobs:
-  publish-release:
-    name: Publish release
+  prepare-release-notes:
     runs-on: ubuntu-latest
     permissions:
       contents: write # required to push to a branch
-    
     steps:
-      - name: Checkout release tag
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - uses: ncipollo/release-action@v1
+      - name: Extract Release Notes
+        id: release-notes
+        run: |
+
+          awk '
+          BEGIN { capture = 0; print_capture = 0; }
+          /^## / {
+            if (capture == 0) {
+              capture = 1;              # Start capture on the first occurrence of "##"
+            } else if (capture == 1) {
+              print_capture = 1;        # Prepare to stop capturing on the next "##"
+            }
+          }
+
+          capture && !print_capture { print; }
+          print_capture { exit; }       # Exit after capturing the desired content
+          ' CHANGELOG.md > ./release-notes.txt
+
+          # Grab release name
+          name=$(grep "^## " release-notes.txt | head -n 1 | sed "s/^## //")
+          echo "release_name=$name" >> $GITHUB_OUTPUT
+
+          # Leave only body for the release
+          sed -i -e '1d' ./release-notes.txt # Remove the first line in the file
+          echo "release_notes_path=release-notes.txt" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: ncipollo/release-action@2c591bcc8ecdcd2db72b97d6147f871fcd833ba5
         with:
-          tag:  ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
-          generateReleaseNotes: true
-          bodyFile: CHANGELOG.md
+          makeLatest: true
+          name: ${{ steps.release-notes.outputs.release_name }}
+          bodyFile: ${{ steps.release-notes.outputs.release_notes_path }}
+          token: ${{ github.token }}
+          tag: ${{ github.ref_name}}
+
+# name: Publish release
+
+# on:
+#   workflow_dispatch:
+
+# jobs:
+#   publish-release:
+#     name: Publish release
+#     runs-on: ubuntu-latest
+#     permissions:
+#       contents: write # required to push to a branch
+    
+#     steps:
+#       - name: Checkout release tag
+#         uses: actions/checkout@v4
+
+#       - run: |
+
+#           # The path to the CHANGELOG.md file
+#           changelog="CHANGELOG.md"
+
+#           # Use awk to extract the content
+#           awk -v version="${{ github.ref_name }}" '
+#             BEGIN {
+#                 # Flag to indicate if we are within the desired version block
+#                 capture = 0
+#             }
+
+#             # When we find the start of the version block, set capture to 1
+#             $0 ~ "## \\[" ${{ github.ref_name }} "\\]" {
+#                 capture = 1
+#             }
+
+#             # If we're capturing and we find the start of another version block, stop capturing
+#             capture && /^## \[/ {
+#                 # Check if this is not the starting block we are interested in
+#                 if ($0 !~ "## \\[" ${{ github.ref_name }} "\\]") {
+#                     capture = 0
+#                     exit # Exit if you only want the section for the specified version
+#                 }
+#             }
+
+#             # If capturing, print the line
+#             capture {
+#                 print
+#             }
+#           ' "$changelog"
 
 
-      # - name: Update CHANGELOG
-      #   id: changelog
-      #   uses: requarks/changelog-action@v1
-      #   with:
-      #     token: ${{ github.token }}
-      #     tag: v1.0.3
-      #     includeInvalidCommits: true
+#       - uses: ncipollo/release-action@v1
+#         with:
+#           tag:  ${{ github.ref_name }}
+#           name: Release ${{ github.ref_name }}
+#           generateReleaseNotes: true
+#           bodyFile: changes_for_release.txt
 
-      # - name: Publish GitHub release
-      #   uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
-      #   with:
-      #     name: "Releasing v1.0.3"
-      #     body_path: ${{ steps.changelog.outputs.changes }}
-      #     tag_name: v1.0.3
 
-      # - name: Create Release
-      #   uses: ncipollo/release-action@2c591bcc8ecdcd2db72b97d6147f871fcd833ba5
-      #   with:
-      #     allowUpdates: true
-      #     draft: false
-      #     makeLatest: true
-      #     name: ${{ github.ref_name }}
-      #     body: ${{ steps.changelog.outputs.changes }}
-      #     token: ${{ github.token }}
+#       # - name: Update CHANGELOG
+#       #   id: changelog
+#       #   uses: requarks/changelog-action@v1
+#       #   with:
+#       #     token: ${{ github.token }}
+#       #     tag: v1.0.3
+#       #     includeInvalidCommits: true
+
+#       # - name: Publish GitHub release
+#       #   uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
+#       #   with:
+#       #     name: "Releasing v1.0.3"
+#       #     body_path: ${{ steps.changelog.outputs.changes }}
+#       #     tag_name: v1.0.3
+
+#       # - name: Create Release
+#       #   uses: ncipollo/release-action@2c591bcc8ecdcd2db72b97d6147f871fcd833ba5
+#       #   with:
+#       #     allowUpdates: true
+#       #     draft: false
+#       #     makeLatest: true
+#       #     name: ${{ github.ref_name }}
+#       #     body: ${{ steps.changelog.outputs.changes }}
+#       #     token: ${{ github.token }}

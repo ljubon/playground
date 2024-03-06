@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.15.0] - 2024-03-06
+
+### Changeq
+
+- v1.1 Test4 Portuguese translation.
+- v1.1 Test1 Translation
+- v1.1 Test2 translation.
+
 ## [2.14.0] - 2024-03-06
 
 ### Change

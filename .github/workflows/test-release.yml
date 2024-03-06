@@ -20,6 +20,7 @@ jobs:
         with:
           token: ${{ github.token }}
           tag: v1.0.3
+          includeInvalidCommits: true
 
       - name: Publish GitHub release
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844

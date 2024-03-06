@@ -14,27 +14,26 @@ jobs:
       - name: Checkout release tag
         uses: actions/checkout@v4
 
-      # # TODO: Check if only partial changelog can be published
-      # - name: Publish GitHub release
-      #   uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
-      #   with:
-      #     name: "Releasing v1.0.0"
-      #     body_path: CHANGELOG.md
-      #     tag_name: v1.0.0
-
       - name: Update CHANGELOG
         id: changelog
         uses: requarks/changelog-action@v1
         with:
           token: ${{ github.token }}
-          tag: v1.0.2
+          tag: v1.0.3
 
-      - name: Create Release
-        uses: ncipollo/release-action@2c591bcc8ecdcd2db72b97d6147f871fcd833ba5
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
         with:
-          allowUpdates: true
-          draft: false
-          makeLatest: true
-          name: ${{ github.ref_name }}
-          body: ${{ steps.changelog.outputs.changes }}
-          token: ${{ github.token }}
+          name: "Releasing v1.0.3"
+          body_path: ${{ steps.changelog.outputs.changes }}
+          tag_name: v1.0.3
+
+      # - name: Create Release
+      #   uses: ncipollo/release-action@2c591bcc8ecdcd2db72b97d6147f871fcd833ba5
+      #   with:
+      #     allowUpdates: true
+      #     draft: false
+      #     makeLatest: true
+      #     name: ${{ github.ref_name }}
+      #     body: ${{ steps.changelog.outputs.changes }}
+      #     token: ${{ github.token }}

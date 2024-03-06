@@ -1,0 +1,23 @@
+name: Publish release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish-release:
+    name: Publish release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # required to push to a branch
+    
+    steps:
+      - name: Checkout release tag
+        uses: actions/checkout@v4
+
+      # TODO: Check if only partial changelog can be published
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
+        with:
+          name: "Releasing v1.0.0"
+          body_path: CHANGELOG.md
+          tag_name: v1.0.0
